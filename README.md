@@ -15,3 +15,22 @@ This application will be built several objectives in mind:
  - Top-notch deployment, release and versioning story
  - Multiple clients (Web, iPhone, Android, etc.)
  - Not-only-one architectural pattern
+
+## Approach to Take
+
+The below is the prefered approach to take to build this project:
+
+ - Authentication/Identity: We need to identify users in our system and persist the identity.
+ - View: We should be able to view the products on a client.
+ - Search: We should be able to search for products.
+ - Shopping Cart: User should be able to fill in their shopping cart. Perfect case for event store!
+ - Order: Whole point of the business. Without the orders, we are NOTHING! Good case for asyncronous processing.
+
+### Cross Cutting Concerns
+
+ - Analytics: This is important bit so that
+     - 1-) we can approach people with recommendations. Good case for a graph database.
+     - 2-) we can identify the application usage. Good case for Google analytics.
+
+### Going Beyond
+ - Product Comments: Make users comment on products and identify users with legit comments for the stuff that they have bought.
