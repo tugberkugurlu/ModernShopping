@@ -158,7 +158,6 @@ ClientBin/
 *~
 *.dbmdl
 *.dbproj.schemaview
-*.pfx
 *.publishsettings
 node_modules/
 bower_components/
@@ -194,3 +193,6 @@ FakesAssemblies/
 
 # Visual Studio 6 workspace options file
 *.opt
+
+#DNX
+project.lock.json
