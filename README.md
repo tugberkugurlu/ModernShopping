@@ -21,7 +21,7 @@ This application will be built several objectives in mind:
 The below is the prefered approach to take to build this project:
 
  - Authentication/Identity: We need to identify users in our system and persist the identity. Good case for relational data storage system like SQL Server.
- - View: We should be able to view the products on a client.
+ - View: We should be able to view the products on a client. Incredibly sensible for MongoDB.
  - Search: We should be able to search for products.
  - Shopping Cart: User should be able to fill in their shopping cart. Perfect case for event store!
  - Order: Whole point of the business. Without the orders, we are NOTHING! Good case for asyncronous processing (stock limit, price changes, etc.).
