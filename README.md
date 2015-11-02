@@ -24,7 +24,7 @@ The below is the prefered approach to take to build this project:
  - View: We should be able to view the products on a client.
  - Search: We should be able to search for products.
  - Shopping Cart: User should be able to fill in their shopping cart. Perfect case for event store!
- - Order: Whole point of the business. Without the orders, we are NOTHING! Good case for asyncronous processing.
+ - Order: Whole point of the business. Without the orders, we are NOTHING! Good case for asyncronous processing (stock limit, price changes, etc.).
 
 ### Cross Cutting Concerns
 
