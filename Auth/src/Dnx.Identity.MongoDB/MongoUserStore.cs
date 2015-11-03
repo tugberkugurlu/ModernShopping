@@ -8,11 +8,17 @@ using Microsoft.Framework.Logging;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
 using Dnx.Identity.MongoDB.Models;
+using System.Linq;
+using System.Globalization;
+using System.Security.Claims;
 
 namespace Dnx.Identity.MongoDB
 {
     public class MongoIdentityUser
     {
+        private readonly List<MongoUserClaim> _claims;
+        private readonly List<MongoUserLogin> _logins;
+
         public MongoIdentityUser(string userName, string email)
             : this(userName)
         {
@@ -31,32 +37,185 @@ namespace Dnx.Identity.MongoDB
                 throw new ArgumentNullException(nameof(userName));
             }
 
-            Id = ObjectId.GenerateNewId().ToString();
+            Id = GenerateId(userName);
             UserName = userName;
             CreatedOn = new Occurrence();
+
+            _claims = new List<MongoUserClaim>();
+            _logins = new List<MongoUserLogin>();
         }
 
         [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; private set; }
-        public string UserName { get; set; }
-        public string NormalizedUserName { get; set; }
-        public MongoUserEmail Email { get; set; }
+        public string UserName { get; private set; }
+        public string NormalizedUserName { get; private set; }
+        public MongoUserEmail Email { get; private set; }
 
-        public MongoUserPhoneNumber PhoneNumber { get; set; }
-        public string PasswordHash { get; set; }
-        public string SecurityStamp { get; set; }
-        public bool IsLockoutEnabled { get; set; }
-        public bool IsTwoFactorEnabled { get; set; }
+        public MongoUserPhoneNumber PhoneNumber { get; private set; }
+        public string PasswordHash { get; private set; }
+        public string SecurityStamp { get; private set; }
+        public bool IsTwoFactorEnabled { get; private set; }
 
-        public IList<MongoUserClaim> Claims { get; set; }
-        public IList<MongoUserLogin> Logins { get; set; }
+        public IEnumerable<MongoUserClaim> Claims
+        {
+            get
+            {
+                return _claims;
+            }
 
-        public int AccessFailedCount { get; set; }
-        public DateTime? LockoutEndDate { get; set; }
+            private set
+            {
+                if (value != null)
+                {
+                    _claims.AddRange(value);
+                }
+            }
+        }
 
-        public Occurrence CreatedOn { get; set; }
+        public IEnumerable<MongoUserLogin> Logins
+        {
+            get
+            {
+                return _logins;
+            }
+
+            private set
+            {
+                if (value != null)
+                {
+                    _logins.AddRange(value);
+                }
+            }
+        }
+
+        public int AccessFailedCount { get; private set; }
+        public bool IsLockoutEnabled { get; private set; }
+        public FutureOccurrence LockoutEndDate { get; private set; }
+
+        public Occurrence CreatedOn { get; private set; }
         public Occurrence DeletedOn { get; private set; }
+
+        public virtual void EnableTwoFactorAuthentication()
+        {
+            IsTwoFactorEnabled = true;
+        }
+
+        public virtual void DisableTwoFactorAuthentication()
+        {
+            IsTwoFactorEnabled = false;
+        }
+
+        public virtual void EnableLockout()
+        {
+            IsLockoutEnabled = true;
+        }
+
+        public virtual void DisableLockout()
+        {
+            IsLockoutEnabled = false;
+        }
+
+        public virtual void SetEmail(string email)
+        {
+            var mongoUserEmail = new MongoUserEmail(email);
+            SetEmail(mongoUserEmail);
+        }
+
+        public virtual void SetEmail(MongoUserEmail mongoUserEmail)
+        {
+            Email = mongoUserEmail;
+        }
+
+        public virtual void SetPhoneNumber(string phoneNumber)
+        {
+            var mongoUserPhoneNumber = new MongoUserPhoneNumber(phoneNumber);
+            SetPhoneNumber(mongoUserPhoneNumber);
+        }
+
+        public virtual void SetPhoneNumber(MongoUserPhoneNumber mongoUserPhoneNumber)
+        {
+            PhoneNumber = mongoUserPhoneNumber;
+        }
+
+        public virtual void SetPasswordHash(string passwordHash)
+        {
+            PasswordHash = passwordHash;
+        }
+
+        public virtual void SetSecurityStamp(string securityStamp)
+        {
+            SecurityStamp = securityStamp;
+        }
+
+        public virtual void IncrementAccessFailedCount()
+        {
+            AccessFailedCount++;
+        }
+
+        public virtual void SetAccessFailedCount(int accessFailedCount)
+        {
+            AccessFailedCount = accessFailedCount;
+        }
+
+        public virtual void ResetAccessFailedCount()
+        {
+            AccessFailedCount = 0;
+        }
+
+        public virtual void LockUntil(DateTime lockoutEndDate)
+        {
+            LockoutEndDate = new FutureOccurrence(lockoutEndDate);
+        }
+
+        public virtual void AddClaim(Claim claim)
+        {
+            if (claim == null)
+            {
+                throw new ArgumentNullException(nameof(claim));
+            }
+
+            AddClaim(new MongoUserClaim(claim));
+        }
+
+        public virtual void AddClaim(MongoUserClaim mongoUserClaim)
+        {
+            if (mongoUserClaim == null)
+            {
+                throw new ArgumentNullException(nameof(mongoUserClaim));
+            }
+
+            _claims.Add(mongoUserClaim);
+        }
+
+        public virtual void RemoveClaim(MongoUserClaim mongoUserClaim)
+        {
+            if (mongoUserClaim == null)
+            {
+                throw new ArgumentNullException(nameof(mongoUserClaim));
+            }
+
+            _claims.Remove(mongoUserClaim);
+        }
+
+        public virtual void AddLogin(MongoUserLogin mongoUserLogin)
+        {
+            if (mongoUserLogin == null)
+            {
+                throw new ArgumentNullException(nameof(mongoUserLogin));
+            }
+
+            _logins.Add(mongoUserLogin);
+        }
+
+        public virtual void RemoveLogin(MongoUserLogin mongoUserLogin)
+        {
+            if (mongoUserLogin == null)
+            {
+                throw new ArgumentNullException(nameof(mongoUserLogin));
+            }
+
+            _logins.Remove(mongoUserLogin);
+        }
 
         public void Delete()
         {
@@ -67,9 +226,17 @@ namespace Dnx.Identity.MongoDB
 
             DeletedOn = new Occurrence();
         }
+
+        private static string GenerateId(string userName)
+        {
+            return userName.ToLower(CultureInfo.InvariantCulture);
+        }
     }
 
-    public class MongoUserStore<TUser> : IUserStore<TUser> where TUser : MongoIdentityUser
+    public class MongoUserStore<TUser> : 
+        IUserStore<TUser>,
+        IUserLoginStore<TUser>
+        where TUser : MongoIdentityUser
     {
         private readonly IMongoCollection<TUser> _usersCollection;
         private readonly ILogger _logger;
@@ -121,42 +288,180 @@ namespace Dnx.Identity.MongoDB
 
         public Task<TUser> FindByIdAsync(string userId, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            if (userId == null)
+            {
+                throw new ArgumentNullException(nameof(userId));
+            }
+
+            var query = Builders<TUser>.Filter.And(
+                Builders<TUser>.Filter.Eq(u => u.Id, userId),
+                Builders<TUser>.Filter.Eq(u => u.DeletedOn, null)
+            );
+
+            return _usersCollection.Find(query).FirstOrDefaultAsync(cancellationToken);
         }
 
         public Task<TUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            if (normalizedUserName == null)
+            {
+                throw new ArgumentNullException(nameof(normalizedUserName));
+            }
+
+            var query = Builders<TUser>.Filter.And(
+                Builders<TUser>.Filter.Eq(u => u.NormalizedUserName, normalizedUserName),
+                Builders<TUser>.Filter.Eq(u => u.DeletedOn, null)
+            );
+
+            return _usersCollection.Find(query).FirstOrDefaultAsync(cancellationToken);
         }
 
         public Task<string> GetNormalizedUserNameAsync(TUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            return Task.FromResult(user.NormalizedUserName);
         }
 
         public Task<string> GetUserIdAsync(TUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            return Task.FromResult(user.Id);
         }
 
         public Task<string> GetUserNameAsync(TUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            return Task.FromResult(user.UserName);
         }
 
         public Task SetNormalizedUserNameAsync(TUser user, string normalizedName, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public Task SetUserNameAsync(TUser user, string userName, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
-        public Task<IdentityResult> UpdateAsync(TUser user, CancellationToken cancellationToken)
+        public async Task<IdentityResult> UpdateAsync(TUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            var query = Builders<TUser>.Filter.And(
+                Builders<TUser>.Filter.Eq(u => u.Id, user.Id),
+                Builders<TUser>.Filter.Eq(u => u.DeletedOn, null)
+            );
+
+            var replaceResult = await _usersCollection.ReplaceOneAsync(query, user, new UpdateOptions { IsUpsert = false }).ConfigureAwait(false);
+
+            return replaceResult.IsModifiedCountAvailable && replaceResult.ModifiedCount == 1
+                ? IdentityResult.Success
+                : IdentityResult.Failed();
+        }
+
+        public Task AddLoginAsync(TUser user, UserLoginInfo login, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (login == null)
+            {
+                throw new ArgumentNullException(nameof(login));
+            }
+
+            // NOTE: Not the best way to ensure uniquness.
+            if (user.Logins.Any(x => x.Equals(login)))
+            {
+                throw new InvalidOperationException("Login already exists.");
+            }
+
+            user.AddLogin(new MongoUserLogin(login));
+
+            return Task.CompletedTask;
+        }
+
+        public Task RemoveLoginAsync(TUser user, string loginProvider, string providerKey, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (loginProvider == null)
+            {
+                throw new ArgumentNullException(nameof(loginProvider));
+            }
+
+            if (providerKey == null)
+            {
+                throw new ArgumentNullException(nameof(providerKey));
+            }
+
+            var login = new UserLoginInfo(loginProvider, providerKey, string.Empty);
+            var loginToRemove = user.Logins.FirstOrDefault(x => x.Equals(login));
+
+            if (loginToRemove != null)
+            {
+                user.RemoveLogin(loginToRemove);
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public Task<IList<UserLoginInfo>> GetLoginsAsync(TUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            var logins = user.Logins.Select(login => 
+                new UserLoginInfo(login.LoginProvider, login.ProviderKey, login.ProviderDisplayName));
+
+            return Task.FromResult<IList<UserLoginInfo>>(logins.ToList());
+        }
+
+        public Task<TUser> FindByLoginAsync(string loginProvider, string providerKey, CancellationToken cancellationToken)
+        {
+            if (loginProvider == null)
+            {
+                throw new ArgumentNullException(nameof(loginProvider));
+            }
+
+            if (providerKey == null)
+            {
+                throw new ArgumentNullException(nameof(providerKey));
+            }
+
+            var notDeletedQuery = Builders<TUser>.Filter.Eq(u => u.DeletedOn, null);
+            var loginQuery = Builders<TUser>.Filter.ElemMatch(usr => usr.Logins,
+                Builders<MongoUserLogin>.Filter.And(
+                    Builders<MongoUserLogin>.Filter.Eq(lg => lg.LoginProvider, loginProvider),
+                    Builders<MongoUserLogin>.Filter.Eq(lg => lg.ProviderKey, providerKey)
+                )
+            );
+
+            var query = Builders<TUser>.Filter.And(notDeletedQuery, loginQuery);
+
+            return _usersCollection.Find(query).FirstOrDefaultAsync();
         }
 
         public void Dispose()
