@@ -34,3 +34,8 @@ The below is the prefered approach to take to build this project:
 
 ### Going Beyond
  - Product Comments: Make users comment on products and identify users with legit comments for the stuff that they have bought.
+
+## Some Constraints
+
+ - Have integration tests only, no unit tests.
+ - Use NodaTime on all .NET projects whenever possible.
