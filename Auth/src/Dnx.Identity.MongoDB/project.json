@@ -1,0 +1,21 @@
+﻿{
+  "version": "1.0.0-*",
+  "description": "Dnx.Identity.MongoDB Class Library",
+  "authors": [ "Tugberk.Ugurlu" ],
+  "tags": [ "" ],
+  "projectUrl": "",
+  "licenseUrl": "",
+
+  "dependencies": {
+    "Microsoft.AspNet.Identity": "3.0.0-beta8",
+    "Microsoft.Framework.Logging": "1.0.0-beta8"
+  },
+
+  "frameworks": {
+    "dnx452": {
+      "dependencies": {
+        "MongoDB.Driver":  "2.0.1"
+      }
+    }
+  }
+}
