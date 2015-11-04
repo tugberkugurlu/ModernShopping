@@ -126,6 +126,16 @@ namespace Dnx.Identity.MongoDB
             Email = mongoUserEmail;
         }
 
+        public virtual void SetNormalizedUserName(string normalizedUserName)
+        {
+            if(normalizedUserName == null)
+            {
+                throw new ArgumentNullException(nameof(normalizedUserName));
+            }
+
+            NormalizedUserName = normalizedUserName;
+        }
+
         public virtual void SetPhoneNumber(string phoneNumber)
         {
             var mongoUserPhoneNumber = new MongoUserPhoneNumber(phoneNumber);
@@ -348,12 +358,24 @@ namespace Dnx.Identity.MongoDB
 
         public Task SetNormalizedUserNameAsync(TUser user, string normalizedName, CancellationToken cancellationToken)
         {
-            throw new NotSupportedException();
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (normalizedName == null)
+            {
+                throw new ArgumentNullException(nameof(normalizedName));
+            }
+
+            user.SetNormalizedUserName(normalizedName);
+
+            return Task.CompletedTask;
         }
 
         public Task SetUserNameAsync(TUser user, string userName, CancellationToken cancellationToken)
         {
-            throw new NotSupportedException();
+            throw new NotSupportedException("Changing the username is not supported.");
         }
 
         public async Task<IdentityResult> UpdateAsync(TUser user, CancellationToken cancellationToken)
