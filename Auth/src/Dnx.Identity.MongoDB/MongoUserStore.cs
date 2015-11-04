@@ -247,7 +247,9 @@ namespace Dnx.Identity.MongoDB
         IUserStore<TUser>,
         IUserLoginStore<TUser>,
         IUserClaimStore<TUser>,
-        IUserPasswordStore<TUser>
+        IUserPasswordStore<TUser>,
+        IUserSecurityStampStore<TUser>,
+        IUserTwoFactorStore<TUser>
         where TUser : MongoIdentityUser
     {
         private readonly IMongoCollection<TUser> _usersCollection;
@@ -267,6 +269,10 @@ namespace Dnx.Identity.MongoDB
 
             _usersCollection = usersCollection;
             _logger = loggerFactory.CreateLogger(GetType().Name);
+        }
+
+        public void Dispose()
+        {
         }
 
         public async Task<IdentityResult> CreateAsync(TUser user, CancellationToken cancellationToken)
@@ -616,8 +622,60 @@ namespace Dnx.Identity.MongoDB
             return Task.FromResult(user.PasswordHash != null);
         }
 
-        public void Dispose()
+        public Task SetSecurityStampAsync(TUser user, string stamp, CancellationToken cancellationToken)
         {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (stamp == null)
+            {
+                throw new ArgumentNullException(nameof(stamp));
+            }
+
+            user.SetSecurityStamp(stamp);
+
+            return Task.CompletedTask;
+        }
+
+        public Task<string> GetSecurityStampAsync(TUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            return Task.FromResult(user.SecurityStamp);
+        }
+
+        public Task SetTwoFactorEnabledAsync(TUser user, bool enabled, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (enabled)
+            {
+                user.EnableTwoFactorAuthentication();
+            }
+            else
+            {
+                user.DisableTwoFactorAuthentication();
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public Task<bool> GetTwoFactorEnabledAsync(TUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            return Task.FromResult(user.IsTwoFactorEnabled);
         }
     }
 }
