@@ -250,7 +250,8 @@ namespace Dnx.Identity.MongoDB
         IUserPasswordStore<TUser>,
         IUserSecurityStampStore<TUser>,
         IUserTwoFactorStore<TUser>,
-        IUserEmailStore<TUser>
+        IUserEmailStore<TUser>,
+        IUserLockoutStore<TUser>
         where TUser : MongoIdentityUser
     {
         private readonly IMongoCollection<TUser> _usersCollection;
@@ -792,6 +793,104 @@ namespace Dnx.Identity.MongoDB
             }
 
             user.Email.SetNormalizedEmail(normalizedEmail);
+
+            return Task.CompletedTask;
+        }
+
+        public Task<DateTimeOffset?> GetLockoutEndDateAsync(TUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            var lockoutEndDate = user.LockoutEndDate != null
+                ? new DateTimeOffset(user.LockoutEndDate.Instant)
+                : default(DateTimeOffset?);
+
+            return Task.FromResult(lockoutEndDate);
+        }
+
+        public Task SetLockoutEndDateAsync(TUser user, DateTimeOffset? lockoutEnd, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if(lockoutEnd != null)
+            {
+                user.LockUntil(lockoutEnd.Value.UtcDateTime);
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public Task<int> IncrementAccessFailedCountAsync(TUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            var filter = Builders<TUser>.Filter.Eq(u => u.Id, user.Id);
+            var update = Builders<TUser>.Update.Inc(usr => usr.AccessFailedCount, 1);
+            var findOneAndUpdateOptions = new FindOneAndUpdateOptions<TUser, int>
+            {
+                ReturnDocument = ReturnDocument.After,
+                Projection = Builders<TUser>.Projection.Expression(usr => usr.AccessFailedCount)
+            };
+
+            return _usersCollection.FindOneAndUpdateAsync<int>(filter, update, findOneAndUpdateOptions);
+        }
+
+        public Task ResetAccessFailedCountAsync(TUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            user.ResetAccessFailedCount();
+
+            return Task.CompletedTask;
+        }
+
+        public Task<int> GetAccessFailedCountAsync(TUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            return Task.FromResult(user.AccessFailedCount);
+        }
+
+        public Task<bool> GetLockoutEnabledAsync(TUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            return Task.FromResult(user.IsLockoutEnabled);
+        }
+
+        public Task SetLockoutEnabledAsync(TUser user, bool enabled, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (enabled)
+            {
+                user.EnableLockout();
+            }
+            else
+            {
+                user.DisableLockout();
+            }
 
             return Task.CompletedTask;
         }
