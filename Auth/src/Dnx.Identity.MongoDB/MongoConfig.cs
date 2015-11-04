@@ -1,6 +1,8 @@
 ﻿using Dnx.Identity.MongoDB.Models;
 using Microsoft.AspNet.Identity;
 using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Conventions;
+using System;
 using System.Threading;
 
 namespace Dnx.Identity.MongoDB
@@ -27,6 +29,8 @@ namespace Dnx.Identity.MongoDB
 
         private static void Configure()
         {
+            RegisterConventions();
+
             BsonClassMap.RegisterClassMap<MongoIdentityUser>(cm =>
             {
                 cm.AutoMap();
@@ -57,6 +61,29 @@ namespace Dnx.Identity.MongoDB
                 cm.AutoMap();
                 cm.MapCreator(l => new MongoUserLogin(new UserLoginInfo(l.LoginProvider, l.ProviderKey, l.ProviderDisplayName)));
             });
+        }
+
+        private static void RegisterConventions()
+        {
+            var pack = new ConventionPack
+            {
+                new IgnoreIfNullConvention(false),
+                new CamelCaseElementNameConvention(),
+            };
+
+            ConventionRegistry.Register("Dnx.Identity.MongoDB", pack, IsConventionApplicable);
+        }
+
+        private static bool IsConventionApplicable(Type type)
+        {
+            return type == typeof(MongoIdentityUser)
+                || type == typeof(MongoUserClaim)
+                || type == typeof(MongoUserEmail)
+                || type == typeof(MongoUserLogin)
+                || type == typeof(MongoUserPhoneNumber)
+                || type == typeof(ConfirmationOccurrence)
+                || type == typeof(FutureOccurrence)
+                || type == typeof(Occurrence);
         }
     }
 }

@@ -8,6 +8,7 @@ using Microsoft.Framework.Logging;
 using Dnx.Identity.MongoDB.Models;
 using System.Linq;
 using System.Security.Claims;
+using MongoDB.Bson.Serialization.Conventions;
 
 namespace Dnx.Identity.MongoDB
 {
@@ -23,6 +24,9 @@ namespace Dnx.Identity.MongoDB
         IUserPhoneNumberStore<TUser>
         where TUser : MongoIdentityUser
     {
+        private static bool _initialized = false;
+        private static object _initializationLock = new object();
+        private static object _initializationTarget;
         private readonly IMongoCollection<TUser> _usersCollection;
         private readonly ILogger _logger;
 
@@ -42,6 +46,7 @@ namespace Dnx.Identity.MongoDB
             _logger = loggerFactory.CreateLogger(GetType().Name);
 
             MongoConfig.EnsureConfigured();
+            EnsureIndicesCreatedAsync().GetAwaiter().GetResult();
         }
 
         public async Task<IdentityResult> CreateAsync(TUser user, CancellationToken cancellationToken)
@@ -723,6 +728,42 @@ namespace Dnx.Identity.MongoDB
 
         public void Dispose()
         {
+        }
+
+        private async Task EnsureIndicesCreatedAsync()
+        {
+            var obj = LazyInitializer.EnsureInitialized(ref _initializationTarget, ref _initialized, ref _initializationLock, () =>
+            {
+                return EnsureIndicesCreatedImplAsync();
+            });
+
+            if(obj != null)
+            {
+                var taskToAwait = (Task)obj;
+                await taskToAwait.ConfigureAwait(false);
+            }
+        }
+
+        private async Task EnsureIndicesCreatedImplAsync()
+        {
+            var indexNames = new
+            {
+                UniqueEmail = "identity_email_unique",
+                Login = "identity_logins_loginProvider_providerKey"
+            };
+
+            var pack = ConventionRegistry.Lookup(typeof(CamelCaseElementNameConvention));
+
+            var emailKeyBuilder = Builders<TUser>.IndexKeys.Ascending(user => user.Email.Value);
+            var loginKeyBuilder = Builders<TUser>.IndexKeys.Ascending("logins.loginProvider").Ascending("logins.providerKey");
+
+            var tasks = new[]
+            {
+                _usersCollection.Indexes.CreateOneAsync(emailKeyBuilder, new CreateIndexOptions { Unique = true, Name = indexNames.UniqueEmail }),
+                _usersCollection.Indexes.CreateOneAsync(loginKeyBuilder, new CreateIndexOptions { Name = indexNames.Login })
+            };
+
+            await Task.WhenAll(tasks).ConfigureAwait(false);
         }
     }
 }
