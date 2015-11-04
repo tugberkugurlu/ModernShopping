@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using MongoDB.Bson.Serialization.Attributes;
 using Dnx.Identity.MongoDB.Models;
 using System.Globalization;
 using System.Security.Claims;

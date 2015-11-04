@@ -30,11 +30,16 @@ namespace Dnx.Identity.MongoDB
         private readonly IMongoCollection<TUser> _usersCollection;
         private readonly ILogger _logger;
 
-        public MongoUserStore(IMongoCollection<TUser> usersCollection, ILoggerFactory loggerFactory)
+        static MongoUserStore()
         {
-            if(usersCollection == null)
+            MongoConfig.EnsureConfigured();
+        }
+
+        public MongoUserStore(IMongoDatabase database, ILoggerFactory loggerFactory)
+        {
+            if(database == null)
             {
-                throw new ArgumentNullException(nameof(usersCollection));
+                throw new ArgumentNullException(nameof(database));
             }
 
             if (loggerFactory == null)
@@ -42,10 +47,9 @@ namespace Dnx.Identity.MongoDB
                 throw new ArgumentNullException(nameof(loggerFactory));
             }
 
-            _usersCollection = usersCollection;
+            _usersCollection = database.GetCollection<TUser>("users");
             _logger = loggerFactory.CreateLogger(GetType().Name);
 
-            MongoConfig.EnsureConfigured();
             EnsureIndicesCreatedAsync().GetAwaiter().GetResult();
         }
 
