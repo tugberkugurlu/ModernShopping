@@ -251,7 +251,8 @@ namespace Dnx.Identity.MongoDB
         IUserSecurityStampStore<TUser>,
         IUserTwoFactorStore<TUser>,
         IUserEmailStore<TUser>,
-        IUserLockoutStore<TUser>
+        IUserLockoutStore<TUser>,
+        IUserPhoneNumberStore<TUser>
         where TUser : MongoIdentityUser
     {
         private readonly IMongoCollection<TUser> _usersCollection;
@@ -891,6 +892,65 @@ namespace Dnx.Identity.MongoDB
             {
                 user.DisableLockout();
             }
+
+            return Task.CompletedTask;
+        }
+
+        public Task SetPhoneNumberAsync(TUser user, string phoneNumber, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (phoneNumber == null)
+            {
+                throw new ArgumentNullException(nameof(phoneNumber));
+            }
+
+            user.SetPhoneNumber(phoneNumber);
+
+            return Task.CompletedTask;
+        }
+
+        public Task<string> GetPhoneNumberAsync(TUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            return Task.FromResult(user.PhoneNumber?.Value);
+        }
+
+        public Task<bool> GetPhoneNumberConfirmedAsync(TUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (user.PhoneNumber == null)
+            {
+                throw new InvalidOperationException("Cannot get the confirmation status of the phone number since the user doesn't have a phone number.");
+            }
+
+            return Task.FromResult(user.PhoneNumber.IsConfirmed());
+        }
+
+        public Task SetPhoneNumberConfirmedAsync(TUser user, bool confirmed, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (user.PhoneNumber == null)
+            {
+                throw new InvalidOperationException("Cannot set the confirmation status of the phone number since the user doesn't have a phone number.");
+            }
+
+            user.PhoneNumber.SetConfirmed();
 
             return Task.CompletedTask;
         }
