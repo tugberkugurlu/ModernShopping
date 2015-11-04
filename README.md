@@ -39,3 +39,4 @@ The below is the prefered approach to take to build this project:
 
  - Have integration tests only, no unit tests.
  - Use NodaTime on all .NET projects whenever possible.
+ - The whole solution should be runable cohesively with minimal config locally as well as individual pieces running seperately.
