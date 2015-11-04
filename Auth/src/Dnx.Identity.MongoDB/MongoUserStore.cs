@@ -249,7 +249,8 @@ namespace Dnx.Identity.MongoDB
         IUserClaimStore<TUser>,
         IUserPasswordStore<TUser>,
         IUserSecurityStampStore<TUser>,
-        IUserTwoFactorStore<TUser>
+        IUserTwoFactorStore<TUser>,
+        IUserEmailStore<TUser>
         where TUser : MongoIdentityUser
     {
         private readonly IMongoCollection<TUser> _usersCollection;
@@ -676,6 +677,123 @@ namespace Dnx.Identity.MongoDB
             }
 
             return Task.FromResult(user.IsTwoFactorEnabled);
+        }
+
+        public Task SetEmailAsync(TUser user, string email, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (email == null)
+            {
+                throw new ArgumentNullException(nameof(email));
+            }
+
+            user.SetEmail(email);
+
+            return Task.CompletedTask;
+        }
+
+        public Task<string> GetEmailAsync(TUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            var email = (user.Email != null) ? user.Email.Value : null;
+
+            return Task.FromResult(email);
+        }
+
+        public Task<bool> GetEmailConfirmedAsync(TUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (user.Email == null)
+            {
+                throw new InvalidOperationException("Cannot get the confirmation status of the e-mail since the user doesn't have an e-mail.");
+            }
+
+            return Task.FromResult(user.Email.IsConfirmed());
+        }
+
+        public Task SetEmailConfirmedAsync(TUser user, bool confirmed, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (user.Email == null)
+            {
+                throw new InvalidOperationException("Cannot set the confirmation status of the e-mail because user doesn't have an e-mail.");
+            }
+
+            if (confirmed)
+            {
+                user.Email.SetConfirmed();
+            }
+            else
+            {
+                user.Email.SetUnconfirmed();
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public Task<TUser> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken)
+        {
+            if (normalizedEmail == null)
+            {
+                throw new ArgumentNullException(nameof(normalizedEmail));
+            }
+
+            var query = Builders<TUser>.Filter.And(
+                Builders<TUser>.Filter.Eq(u => u.Email.NormalizedValue, normalizedEmail),
+                Builders<TUser>.Filter.Eq(u => u.DeletedOn, null)
+            );
+
+            return _usersCollection.Find(query).FirstOrDefaultAsync(cancellationToken);
+        }
+
+        public Task<string> GetNormalizedEmailAsync(TUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            var normalizedEmail = (user.Email != null) ? user.Email.NormalizedValue : null;
+
+            return Task.FromResult(normalizedEmail);
+        }
+
+        public Task SetNormalizedEmailAsync(TUser user, string normalizedEmail, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (normalizedEmail == null)
+            {
+                throw new ArgumentNullException(nameof(normalizedEmail));
+            }
+
+            if (user.Email == null)
+            {
+                throw new InvalidOperationException("Cannot set normalized e-mail since the user doesn't have an e-mail.");
+            }
+
+            user.Email.SetNormalizedEmail(normalizedEmail);
+
+            return Task.CompletedTask;
         }
     }
 }
