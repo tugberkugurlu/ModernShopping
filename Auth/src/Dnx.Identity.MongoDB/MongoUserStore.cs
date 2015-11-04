@@ -245,7 +245,8 @@ namespace Dnx.Identity.MongoDB
 
     public class MongoUserStore<TUser> : 
         IUserStore<TUser>,
-        IUserLoginStore<TUser>
+        IUserLoginStore<TUser>,
+        IUserClaimStore<TUser>
         where TUser : MongoIdentityUser
     {
         private readonly IMongoCollection<TUser> _usersCollection;
@@ -484,6 +485,102 @@ namespace Dnx.Identity.MongoDB
             var query = Builders<TUser>.Filter.And(notDeletedQuery, loginQuery);
 
             return _usersCollection.Find(query).FirstOrDefaultAsync();
+        }
+
+        public Task<IList<Claim>> GetClaimsAsync(TUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            var claims = user.Claims.Select(clm => new Claim(clm.ClaimType, clm.ClaimValue)).ToList();
+
+            return Task.FromResult<IList<Claim>>(claims);
+        }
+
+        public Task AddClaimsAsync(TUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (claims == null)
+            {
+                throw new ArgumentNullException(nameof(claims));
+            }
+
+            foreach (var claim in claims)
+            {
+                user.AddClaim(claim);
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public Task ReplaceClaimAsync(TUser user, Claim claim, Claim newClaim, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (claim == null)
+            {
+                throw new ArgumentNullException(nameof(claim));
+            }
+
+            if (newClaim == null)
+            {
+                throw new ArgumentNullException(nameof(newClaim));
+            }
+
+            user.RemoveClaim(new MongoUserClaim(claim));
+            user.AddClaim(newClaim);
+
+            return Task.CompletedTask;
+        }
+
+        public Task RemoveClaimsAsync(TUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (claims == null)
+            {
+                throw new ArgumentNullException(nameof(claims));
+            }
+
+            foreach (var claim in claims)
+            {
+                user.RemoveClaim(new MongoUserClaim(claim));
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public async Task<IList<TUser>> GetUsersForClaimAsync(Claim claim, CancellationToken cancellationToken)
+        {
+            if (claim == null)
+            {
+                throw new ArgumentNullException(nameof(claim));
+            }
+
+            var notDeletedQuery = Builders<TUser>.Filter.Eq(u => u.DeletedOn, null);
+            var claimQuery = Builders<TUser>.Filter.ElemMatch(usr => usr.Claims,
+                Builders<MongoUserClaim>.Filter.And(
+                    Builders<MongoUserClaim>.Filter.Eq(c => c.ClaimType, claim.Type),
+                    Builders<MongoUserClaim>.Filter.Eq(c => c.ClaimValue, claim.Value)
+                )
+            );
+
+            var query = Builders<TUser>.Filter.And(notDeletedQuery, claimQuery);
+            var users = await _usersCollection.Find(query).ToListAsync().ConfigureAwait(false);
+
+            return users;
         }
 
         public void Dispose()
