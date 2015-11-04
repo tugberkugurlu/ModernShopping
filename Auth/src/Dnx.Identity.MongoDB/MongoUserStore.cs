@@ -246,7 +246,8 @@ namespace Dnx.Identity.MongoDB
     public class MongoUserStore<TUser> : 
         IUserStore<TUser>,
         IUserLoginStore<TUser>,
-        IUserClaimStore<TUser>
+        IUserClaimStore<TUser>,
+        IUserPasswordStore<TUser>
         where TUser : MongoIdentityUser
     {
         private readonly IMongoCollection<TUser> _usersCollection;
@@ -581,6 +582,38 @@ namespace Dnx.Identity.MongoDB
             var users = await _usersCollection.Find(query).ToListAsync().ConfigureAwait(false);
 
             return users;
+        }
+
+        public Task SetPasswordHashAsync(TUser user, string passwordHash, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            user.SetPasswordHash(passwordHash);
+
+            return Task.CompletedTask;
+        }
+
+        public Task<string> GetPasswordHashAsync(TUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            return Task.FromResult(user.PasswordHash);
+        }
+
+        public Task<bool> HasPasswordAsync(TUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            return Task.FromResult(user.PasswordHash != null);
         }
 
         public void Dispose()
