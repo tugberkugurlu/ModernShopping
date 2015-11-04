@@ -22,12 +22,12 @@ namespace Dnx.Identity.MongoDB.Models
             return ConfirmationRecord != null;
         }
 
-        internal void SetConfirmed()
+        public void SetConfirmed()
         {
             SetConfirmed(new ConfirmationOccurrence());
         }
 
-        internal void SetConfirmed(ConfirmationOccurrence confirmationRecord)
+        public void SetConfirmed(ConfirmationOccurrence confirmationRecord)
         {
             if (ConfirmationRecord == null)
             {
@@ -35,7 +35,7 @@ namespace Dnx.Identity.MongoDB.Models
             }
         }
 
-        internal void SetUnconfirmed()
+        public void SetUnconfirmed()
         {
             ConfirmationRecord = null;
         }
