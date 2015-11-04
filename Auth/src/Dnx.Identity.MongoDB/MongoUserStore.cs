@@ -40,6 +40,8 @@ namespace Dnx.Identity.MongoDB
 
             _usersCollection = usersCollection;
             _logger = loggerFactory.CreateLogger(GetType().Name);
+
+            MongoConfig.EnsureConfigured();
         }
 
         public async Task<IdentityResult> CreateAsync(TUser user, CancellationToken cancellationToken)

@@ -12,15 +12,20 @@ namespace Dnx.Identity.MongoDB
         private readonly List<MongoUserClaim> _claims;
         private readonly List<MongoUserLogin> _logins;
 
-        public MongoIdentityUser(string userName, string email)
-            : this(userName)
+        public MongoIdentityUser(string userName, string email) : this(userName)
         {
-            if (email == null)
+            if (email != null)
             {
-                throw new ArgumentNullException(nameof(email));
+                Email = new MongoUserEmail(email);
             }
+        }
 
-            Email = new MongoUserEmail(email);
+        public MongoIdentityUser(string userName, MongoUserEmail email) : this(userName)
+        {
+            if (email != null)
+            {
+                Email = email;
+            }
         }
 
         public MongoIdentityUser(string userName)
@@ -38,7 +43,6 @@ namespace Dnx.Identity.MongoDB
             _logins = new List<MongoUserLogin>();
         }
 
-        [BsonId]
         public string Id { get; private set; }
         public string UserName { get; private set; }
         public string NormalizedUserName { get; private set; }

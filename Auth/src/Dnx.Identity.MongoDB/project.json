@@ -1,10 +1,10 @@
 ﻿{
   "version": "1.0.0-*",
   "description": "Dnx.Identity.MongoDB Class Library",
-  "authors": [ "Tugberk.Ugurlu" ],
-  "tags": [ "" ],
-  "projectUrl": "",
-  "licenseUrl": "",
+  "authors": [ "Tugberk Ugurlu" ],
+  "tags": [ "identity", "mongodb", "mongo", "aspnet5", "dnx" ],
+  "projectUrl": "https://github.com/tugberkugurlu/ModernShopping",
+  "licenseUrl": "https://github.com/tugberkugurlu/ModernShopping/blob/master/LICENSE",
 
   "dependencies": {
     "Microsoft.AspNet.Identity": "3.0.0-beta8",
