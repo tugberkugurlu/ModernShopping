@@ -18,7 +18,8 @@
       "dependencies": {
         "IdentityServer3": "2.1.1",
         "Dnx.Identity.MongoDB": "",
-        "Microsoft.Owin": "3.0.1"
+        "Microsoft.Owin": "3.0.1",
+        "IdentityModel":  "1.2.1"
       }
     }
   },
