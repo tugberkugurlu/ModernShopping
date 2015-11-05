@@ -78,6 +78,7 @@ namespace Dnx.Identity.MongoDB
         {
             return type == typeof(MongoIdentityUser)
                 || type == typeof(MongoUserClaim)
+                || type == typeof(MongoUserContactRecord)
                 || type == typeof(MongoUserEmail)
                 || type == typeof(MongoUserLogin)
                 || type == typeof(MongoUserPhoneNumber)
