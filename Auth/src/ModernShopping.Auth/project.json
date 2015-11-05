@@ -1,0 +1,38 @@
+﻿{
+  "webroot": "wwwroot",
+  "version": "1.0.0-*",
+
+  "dependencies": {
+    "Microsoft.AspNet.Server.Kestrel": "1.0.0-beta8",
+    "Microsoft.AspNet.DataProtection": "1.0.0-beta8",
+    "Microsoft.AspNet.Diagnostics": "1.0.0-beta8",
+    "Microsoft.AspNet.Owin": "1.0.0-beta8"
+  },
+
+  "commands": {
+    "web": "Microsoft.AspNet.Hosting --config hosting.json"
+  },
+
+  "frameworks": {
+    "dnx452": {
+      "dependencies": {
+        "IdentityServer3": "2.1.1",
+        "Dnx.Identity.MongoDB": "",
+        "Microsoft.Owin": "3.0.1"
+      }
+    }
+  },
+
+  "publishExclude": [
+    "node_modules",
+    "bower_components",
+    "**.xproj",
+    "**.user",
+    "**.vspscc"
+  ],
+  "exclude": [
+    "wwwroot",
+    "node_modules",
+    "bower_components"
+  ]
+}
