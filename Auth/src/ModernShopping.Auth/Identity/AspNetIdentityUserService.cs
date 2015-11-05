@@ -16,7 +16,7 @@ namespace ModernShopping.Auth.Identity
     /// Taken from https://github.com/IdentityServer/IdentityServer3.Samples/blob/cf3ba612ead847d868dc64d4e39857b70f2b35ca/source/AspNetIdentity/WebHost/App_Packages/IdentityServer3.AspNetIdentity/IdentityServer3.AspNetIdentity.cs
     /// </remarks>
     public class AspNetIdentityUserService<TUser> : UserServiceBase
-        where TUser : class, new()
+        where TUser : class
     {
         protected readonly Microsoft.AspNet.Identity.UserManager<TUser> _userManager;
 
