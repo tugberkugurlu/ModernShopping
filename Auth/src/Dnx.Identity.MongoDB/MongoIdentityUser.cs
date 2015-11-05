@@ -153,11 +153,6 @@ namespace Dnx.Identity.MongoDB
             SecurityStamp = securityStamp;
         }
 
-        public virtual void IncrementAccessFailedCount()
-        {
-            AccessFailedCount++;
-        }
-
         public virtual void SetAccessFailedCount(int accessFailedCount)
         {
             AccessFailedCount = accessFailedCount;

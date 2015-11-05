@@ -602,7 +602,7 @@ namespace Dnx.Identity.MongoDB
             return Task.CompletedTask;
         }
 
-        public Task<int> IncrementAccessFailedCountAsync(TUser user, CancellationToken cancellationToken)
+        public async Task<int> IncrementAccessFailedCountAsync(TUser user, CancellationToken cancellationToken)
         {
             if (user == null)
             {
@@ -617,7 +617,13 @@ namespace Dnx.Identity.MongoDB
                 Projection = Builders<TUser>.Projection.Expression(usr => usr.AccessFailedCount)
             };
 
-            return _usersCollection.FindOneAndUpdateAsync<int>(filter, update, findOneAndUpdateOptions);
+            var newCount = await _usersCollection
+                .FindOneAndUpdateAsync<int>(filter, update, findOneAndUpdateOptions)
+                .ConfigureAwait(false);
+
+            user.SetAccessFailedCount(newCount);
+
+            return newCount;
         }
 
         public Task ResetAccessFailedCountAsync(TUser user, CancellationToken cancellationToken)
