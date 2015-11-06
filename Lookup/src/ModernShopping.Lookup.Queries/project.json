@@ -1,0 +1,20 @@
+﻿{
+  "version": "1.0.0-*",
+  "description": "ModernShopping.Lookup.Queries Class Library",
+  "authors": [ "Tugberk.Ugurlu" ],
+  "tags": [ "" ],
+  "projectUrl": "",
+  "licenseUrl": "",
+
+  "dependencies": {
+    "Microsoft.Framework.Logging.Abstractions": "1.0.0-beta8"
+  },
+
+  "frameworks": {
+    "dnx452": {
+      "dependencies": {
+        "MongoDB.Driver":  "2.1.0"
+      }
+    }
+  }
+}
