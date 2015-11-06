@@ -6,7 +6,8 @@
     "Microsoft.AspNet.Server.Kestrel": "1.0.0-beta8",
     "Microsoft.AspNet.Authentication.JwtBearer": "1.0.0-beta8",
     "Microsoft.AspNet.Cors": "6.0.0-beta8",
-    "Serilog.Framework.Logging": "1.0.0-beta8-10065"
+    "Serilog.Framework.Logging": "1.0.0-beta8-10065",
+    "ModernShopping.Lookup.Queries":  ""
   },
 
   "commands": {
@@ -14,7 +15,11 @@
   },
 
   "frameworks": {
-    "dnx452": { }
+    "dnx452": {
+      "dependencies": {
+        "MongoDB.Driver":  "2.1.0"
+      }
+    }
   },
 
   "exclude": [ ],

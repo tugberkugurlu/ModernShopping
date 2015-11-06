@@ -2,8 +2,6 @@
 using ModernShopping.Lookup.Queries.Entities;
 using MongoDB.Driver;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace ModernShopping.Lookup.Queries
@@ -19,19 +17,19 @@ namespace ModernShopping.Lookup.Queries
             _logger = logger;
         }
 
-        public Task<ProductQueryResult> Execute(string productId)
+        public async Task<ProductQueryResult> ExecuteAsync(string productId)
         {
-            throw new NotImplementedException();
-        }
-    }
+            if(productId == null)
+            {
+                throw new ArgumentNullException(nameof(productId));
+            }
 
-    public class ProductQueryResult
-    {
-        public ProductQueryResult(Product product)
-        {
-            Product = product;
-        }
+            var filter = Builders<Product>.Filter.Eq(p => p.Id, productId);
+            var product = await _productCollection.Find(filter).FirstOrDefaultAsync().ConfigureAwait(false);
 
-        public Product Product { get; }
+            return product != null
+                ? new ProductQueryResult(product)
+                : null;
+        }
     }
 }
