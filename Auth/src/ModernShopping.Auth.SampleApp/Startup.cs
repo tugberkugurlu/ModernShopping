@@ -13,9 +13,10 @@ namespace ModernShopping.Auth.SampleApp
     public class Startup
     {
         private readonly IApplicationEnvironment _appEnv;
+        private readonly IHostingEnvironment _hostingEnv;
         private readonly ILoggerFactory _loggerFactory;
 
-        public Startup(IApplicationEnvironment appEnv, ILoggerFactory loggerFactory)
+        public Startup(IApplicationEnvironment appEnv, IHostingEnvironment hostingEnv, ILoggerFactory loggerFactory)
         {
             var serilogLogger = new LoggerConfiguration()
                 .WriteTo.TextWriter(Console.Out)
@@ -27,6 +28,7 @@ namespace ModernShopping.Auth.SampleApp
             loggerFactory.AddSerilog(serilogLogger);
 
             _appEnv = appEnv;
+            _hostingEnv = hostingEnv;
             _loggerFactory = loggerFactory;
         }
 
@@ -39,11 +41,14 @@ namespace ModernShopping.Auth.SampleApp
         {
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap = new Dictionary<string, string>();
 
+            // IdentityServer3 hardcodes the audience as '{host-address}/resources'.
+            // It is suggested to do the validation on scopes.
+            // That's why audience validation is disabled with 'ValidateAudience = false' below.
             app.UseJwtBearerAuthentication(options =>
             {
                 options.Authority = "https://localhost:44300/";
-                options.Audience = "https://localhost:44300/resources";
                 options.AutomaticAuthentication = true;
+                options.TokenValidationParameters.ValidateAudience = false;
             });
 
             app.UseCors(policy => policy.WithOrigins("*"));
