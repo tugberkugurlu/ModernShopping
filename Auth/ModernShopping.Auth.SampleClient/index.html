@@ -41,7 +41,7 @@
         }
 
         function getToken() {
-            var authorizationUrl = 'http://localhost:5000/connect/authorize';
+            var authorizationUrl = 'https://localhost:44300/connect/authorize';
             var client_id = 'implicitclient';
             var redirect_uri = 'http://localhost:26003/index.html';
             var response_type = "token";
@@ -101,7 +101,7 @@
                 console.log(e, xhr);
                 show({ error: "unknown http error" });
             };
-            xhr.open("GET", "http://localhost:5000/identity", true);
+            xhr.open("GET", "http://localhost:5001/api/values", true);
             xhr.setRequestHeader("Authorization", "Bearer " + token);
             xhr.send();
         }

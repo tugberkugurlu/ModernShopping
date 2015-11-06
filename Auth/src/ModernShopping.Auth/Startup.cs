@@ -78,7 +78,7 @@ namespace ModernShopping.Auth
             idSvrFactory.ConfigureCustomUserService(serviceProvider);
 
             var idsrvOptions = new IdentityServerOptions
-            {
+            {    
                 SigningCertificate = new X509Certificate2(certFile, "idsrv3test"),
                 Factory = idSvrFactory,
                 RequireSsl = false,
