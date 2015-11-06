@@ -79,6 +79,7 @@ namespace ModernShopping.Auth
 
             var idsrvOptions = new IdentityServerOptions
             {    
+                SiteName = "ModernShopping",
                 SigningCertificate = new X509Certificate2(certFile, "idsrv3test"),
                 Factory = idSvrFactory,
                 RequireSsl = false,

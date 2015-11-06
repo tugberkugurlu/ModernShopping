@@ -42,8 +42,8 @@
 
         function getToken() {
             var authorizationUrl = 'http://localhost:44300/connect/authorize';
-            var client_id = 'implicitclient';
-            var redirect_uri = 'http://localhost:26003/index.html';
+            var client_id = 'ModernShoppingAuthSampleClient';
+            var redirect_uri = 'http://localhost:8080/index.html';
             var response_type = "token";
             var scope = "write";
             var state = Date.now() + "" + Math.random();

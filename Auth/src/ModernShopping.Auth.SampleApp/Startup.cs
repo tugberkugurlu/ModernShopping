@@ -36,12 +36,15 @@ namespace ModernShopping.Auth.SampleApp
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
             services.AddMvc();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap = new Dictionary<string, string>();
+
+            app.UseCors(policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
 
             // IdentityServer3 hardcodes the audience as '{host-address}/resources'.
             // It is suggested to do the validation on scopes.
@@ -62,7 +65,6 @@ namespace ModernShopping.Auth.SampleApp
                 }
             });
 
-            app.UseCors(policy => policy.WithOrigins("*"));
             app.UseMiddleware<RequiredScopesMiddleware>(new List<string> { "write" });
             app.UseMvcWithDefaultRoute();
         }
