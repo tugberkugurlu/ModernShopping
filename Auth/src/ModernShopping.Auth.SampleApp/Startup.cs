@@ -3,6 +3,8 @@ using Microsoft.AspNet.Hosting;
 using Microsoft.Dnx.Runtime;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.Logging;
+using Microsoft.IdentityModel.Protocols;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -46,9 +48,18 @@ namespace ModernShopping.Auth.SampleApp
             // That's why audience validation is disabled with 'ValidateAudience = false' below.
             app.UseJwtBearerAuthentication(options =>
             {
-                options.Authority = "https://localhost:44300/";
+                options.Authority = "http://localhost:44300/";
                 options.AutomaticAuthentication = true;
                 options.TokenValidationParameters.ValidateAudience = false;
+
+                if (_hostingEnv.IsDevelopment())
+                {
+                    options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
+                        metadataAddress: $"{options.Authority}.well-known/openid-configuration",
+                        configRetriever: new OpenIdConnectConfigurationRetriever(),
+                        docRetriever: new HttpDocumentRetriever { RequireHttps = false }
+                    );
+                }
             });
 
             app.UseCors(policy => policy.WithOrigins("*"));
