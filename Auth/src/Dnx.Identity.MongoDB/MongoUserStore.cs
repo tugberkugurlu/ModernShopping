@@ -156,7 +156,7 @@ namespace Dnx.Identity.MongoDB
 
             user.SetNormalizedUserName(normalizedName);
 
-            return Task.CompletedTask;
+            return Task.FromResult(0);
         }
 
         public Task SetUserNameAsync(TUser user, string userName, CancellationToken cancellationToken)
@@ -203,7 +203,7 @@ namespace Dnx.Identity.MongoDB
 
             user.AddLogin(new MongoUserLogin(login));
 
-            return Task.CompletedTask;
+            return Task.FromResult(0);
         }
 
         public Task RemoveLoginAsync(TUser user, string loginProvider, string providerKey, CancellationToken cancellationToken)
@@ -231,7 +231,7 @@ namespace Dnx.Identity.MongoDB
                 user.RemoveLogin(loginToRemove);
             }
 
-            return Task.CompletedTask;
+            return Task.FromResult(0);
         }
 
         public Task<IList<UserLoginInfo>> GetLoginsAsync(TUser user, CancellationToken cancellationToken)
@@ -301,7 +301,7 @@ namespace Dnx.Identity.MongoDB
                 user.AddClaim(claim);
             }
 
-            return Task.CompletedTask;
+            return Task.FromResult(0);
         }
 
         public Task ReplaceClaimAsync(TUser user, Claim claim, Claim newClaim, CancellationToken cancellationToken)
@@ -324,7 +324,7 @@ namespace Dnx.Identity.MongoDB
             user.RemoveClaim(new MongoUserClaim(claim));
             user.AddClaim(newClaim);
 
-            return Task.CompletedTask;
+            return Task.FromResult(0);
         }
 
         public Task RemoveClaimsAsync(TUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
@@ -344,7 +344,7 @@ namespace Dnx.Identity.MongoDB
                 user.RemoveClaim(new MongoUserClaim(claim));
             }
 
-            return Task.CompletedTask;
+            return Task.FromResult(0);
         }
 
         public async Task<IList<TUser>> GetUsersForClaimAsync(Claim claim, CancellationToken cancellationToken)
@@ -377,7 +377,7 @@ namespace Dnx.Identity.MongoDB
 
             user.SetPasswordHash(passwordHash);
 
-            return Task.CompletedTask;
+            return Task.FromResult(0);
         }
 
         public Task<string> GetPasswordHashAsync(TUser user, CancellationToken cancellationToken)
@@ -414,7 +414,7 @@ namespace Dnx.Identity.MongoDB
 
             user.SetSecurityStamp(stamp);
 
-            return Task.CompletedTask;
+            return Task.FromResult(0);
         }
 
         public Task<string> GetSecurityStampAsync(TUser user, CancellationToken cancellationToken)
@@ -443,7 +443,7 @@ namespace Dnx.Identity.MongoDB
                 user.DisableTwoFactorAuthentication();
             }
 
-            return Task.CompletedTask;
+            return Task.FromResult(0);
         }
 
         public Task<bool> GetTwoFactorEnabledAsync(TUser user, CancellationToken cancellationToken)
@@ -470,7 +470,7 @@ namespace Dnx.Identity.MongoDB
 
             user.SetEmail(email);
 
-            return Task.CompletedTask;
+            return Task.FromResult(0);
         }
 
         public Task<string> GetEmailAsync(TUser user, CancellationToken cancellationToken)
@@ -521,7 +521,7 @@ namespace Dnx.Identity.MongoDB
                 user.Email.SetUnconfirmed();
             }
 
-            return Task.CompletedTask;
+            return Task.FromResult(0);
         }
 
         public Task<TUser> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken)
@@ -570,7 +570,7 @@ namespace Dnx.Identity.MongoDB
 
             user.Email.SetNormalizedEmail(normalizedEmail);
 
-            return Task.CompletedTask;
+            return Task.FromResult(0);
         }
 
         public Task<DateTimeOffset?> GetLockoutEndDateAsync(TUser user, CancellationToken cancellationToken)
@@ -599,7 +599,7 @@ namespace Dnx.Identity.MongoDB
                 user.LockUntil(lockoutEnd.Value.UtcDateTime);
             }
 
-            return Task.CompletedTask;
+            return Task.FromResult(0);
         }
 
         public async Task<int> IncrementAccessFailedCountAsync(TUser user, CancellationToken cancellationToken)
@@ -635,7 +635,7 @@ namespace Dnx.Identity.MongoDB
 
             user.ResetAccessFailedCount();
 
-            return Task.CompletedTask;
+            return Task.FromResult(0);
         }
 
         public Task<int> GetAccessFailedCountAsync(TUser user, CancellationToken cancellationToken)
@@ -674,7 +674,7 @@ namespace Dnx.Identity.MongoDB
                 user.DisableLockout();
             }
 
-            return Task.CompletedTask;
+            return Task.FromResult(0);
         }
 
         public Task SetPhoneNumberAsync(TUser user, string phoneNumber, CancellationToken cancellationToken)
@@ -691,7 +691,7 @@ namespace Dnx.Identity.MongoDB
 
             user.SetPhoneNumber(phoneNumber);
 
-            return Task.CompletedTask;
+            return Task.FromResult(0);
         }
 
         public Task<string> GetPhoneNumberAsync(TUser user, CancellationToken cancellationToken)
@@ -733,7 +733,7 @@ namespace Dnx.Identity.MongoDB
 
             user.PhoneNumber.SetConfirmed();
 
-            return Task.CompletedTask;
+            return Task.FromResult(0);
         }
 
         public void Dispose()
