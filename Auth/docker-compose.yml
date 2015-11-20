@@ -1,6 +1,6 @@
 auth:
   build: .
-  dockerfile: Dockerfile-Auth
+  dockerfile: Dockerfile
   ports: 
     - "44300:44300"
   environment: 
