@@ -1,11 +1,13 @@
 auth:
   build: .
-  dockerfile: Dockerfile-Auth
-  ports: 
+  dockerfile: Dockerfile
+  volumes: 
+    - ./:/approot
+  ports:
     - "44300:44300"
   environment: 
     - ModernShoppingAuth_MongoDb__ConnectionString=mongodb://auth_mongo:27017
-  links: 
+  links:
     - auth_mongo
   
 auth_mongo:
