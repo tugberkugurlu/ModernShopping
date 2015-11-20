@@ -15,13 +15,21 @@ using System.Security.Claims;
 using Dnx.Identity.MongoDB;
 using MongoDB.Driver;
 using Microsoft.Framework.DependencyInjection.Extensions;
+using Microsoft.Framework.Configuration;
 
 namespace ModernShopping.Auth
 {
+    public class MongoDbSettings 
+    {
+        public string ConnectionString { get; set; }
+        public string DatabaseName { get; set; }
+    }
+    
     public class Startup
     {
         private readonly IApplicationEnvironment _appEnv;
         private readonly ILoggerFactory _loggerFactory;
+        private readonly IConfiguration _configuration;
 
         public Startup(IApplicationEnvironment appEnv, ILoggerFactory loggerFactory)
         {
@@ -29,6 +37,12 @@ namespace ModernShopping.Auth
                 .WriteTo.ColoredConsole()
                 .MinimumLevel.Verbose()
                 .CreateLogger();
+                
+            var config = new ConfigurationBuilder()
+                .SetBasePath(appEnv.ApplicationBasePath)
+                .AddJsonFile("config.json")
+                .AddEnvironmentVariables("ModernShoppingAuth_")
+                .Build();
 
             Log.Logger = serilogLogger;
             loggerFactory.MinimumLevel = LogLevel.Debug;
@@ -36,14 +50,18 @@ namespace ModernShopping.Auth
 
             _appEnv = appEnv;
             _loggerFactory = loggerFactory;
+            _configuration = config;
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<MongoDbSettings>(_configuration.GetSection("MongoDb"));
+               
             services.AddSingleton<IUserStore<MongoIdentityUser>>(provider =>
             {
-                var client = new MongoClient();
-                var database = client.GetDatabase("IdentitySampleMvc");
+                var options = provider.GetService<IOptions<MongoDbSettings>>();
+                var client = new MongoClient(options.Value.ConnectionString);
+                var database = client.GetDatabase(options.Value.DatabaseName);
                 var loggerFactory = provider.GetService<ILoggerFactory>();
 
                 return new MongoUserStore<MongoIdentityUser>(database, loggerFactory);
