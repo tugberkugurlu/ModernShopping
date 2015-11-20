@@ -44,7 +44,7 @@ namespace ModernShopping.Auth
             {
                 var client = new MongoClient();
                 var database = client.GetDatabase("IdentitySampleMvc");
-                var loggerFactory = provider.GetService(typeof(ILoggerFactory)) as ILoggerFactory;
+                var loggerFactory = provider.GetService<ILoggerFactory>();
 
                 return new MongoUserStore<MongoIdentityUser>(database, loggerFactory);
             });
