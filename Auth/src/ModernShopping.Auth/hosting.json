@@ -1,4 +1,4 @@
 ﻿{
   "server": "Microsoft.AspNet.Server.Kestrel",
-  "server.urls":  "http://localhost:44300"
+  "server.urls":  "http://0.0.0.0:44300"
 }
