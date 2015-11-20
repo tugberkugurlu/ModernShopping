@@ -16,7 +16,7 @@
   },
 
   "frameworks": {
-    "dnx452": { },
+    "dnx451": { },
     "dnxcore50": { }
   },
 

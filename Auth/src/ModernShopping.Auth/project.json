@@ -15,7 +15,7 @@
   },
 
   "frameworks": {
-    "dnx452": {
+    "dnx451": {
       "dependencies": {
         "IdentityServer3": "2.1.1",
         "Dnx.Identity.MongoDB": "",
