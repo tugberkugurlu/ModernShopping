@@ -1,5 +1,5 @@
 ﻿{
-  "version": "3.0.0-beta8-002",
+  "version": "3.0.0-beta8-003",
   "description": "Dnx.Identity.MongoDB Class Library",
   "authors": [ "Tugberk Ugurlu" ],
   "tags": [ "identity", "mongodb", "mongo", "aspnet5", "dnx" ],
@@ -12,7 +12,7 @@
   },
 
   "frameworks": {
-    "dnx452": {
+    "dnx451": {
       "dependencies": {
         "MongoDB.Driver":  "2.0.1"
       }
