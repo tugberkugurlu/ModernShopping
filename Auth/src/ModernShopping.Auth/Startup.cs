@@ -104,7 +104,16 @@ namespace ModernShopping.Auth
 
                 AuthenticationOptions = new AuthenticationOptions
                 {
-                    EnablePostSignOutAutoRedirect = true
+                    EnablePostSignOutAutoRedirect = true,
+                    IdentityProviders = (_, signInAsType) => 
+                    {
+                        app.UseTwitterAuthentication(options =>
+                        {
+                            options.ConsumerKey = "BSdJJ0CrDuvEhpkchnukXZBUv";
+                            options.ConsumerSecret = "xKUNuKhsRdHD03eLn67xhPAyE1wFFEndFo1X2UJaK2m1jdAxf4";
+                            options.SignInScheme = signInAsType;
+                        });
+                    }
                 }
             };
 
