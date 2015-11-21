@@ -16,6 +16,8 @@ using Dnx.Identity.MongoDB;
 using MongoDB.Driver;
 using Microsoft.Framework.DependencyInjection.Extensions;
 using Microsoft.Framework.Configuration;
+using Owin;
+using Microsoft.Owin.Security.Google;
 
 namespace ModernShopping.Auth
 {
@@ -104,7 +106,8 @@ namespace ModernShopping.Auth
 
                 AuthenticationOptions = new AuthenticationOptions
                 {
-                    EnablePostSignOutAutoRedirect = true
+                    EnablePostSignOutAutoRedirect = true,
+                    IdentityProviders = ConfigureIdentityProviders
                 }
             };
 
@@ -130,6 +133,20 @@ namespace ModernShopping.Auth
             });
 
             services.AddSingleton(provider);
+        }
+        
+        public static void ConfigureIdentityProviders(IAppBuilder app, string signInAsType)
+        {
+            var google = new GoogleOAuth2AuthenticationOptions
+            {
+                AuthenticationType = "Google",
+                Caption = "Google",
+                SignInAsAuthenticationType = signInAsType,
+                ClientId = "674291401959-pqa8540v0ul76gcnfiim7jkkrkknke4d.apps.googleusercontent.com",
+                ClientSecret = "rbW3zesQcLxhy7yvazxiv25e"
+            };
+            
+            app.UseGoogleAuthentication(google);
         }
     }
 

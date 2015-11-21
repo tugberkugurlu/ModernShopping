@@ -7,6 +7,7 @@
     "Microsoft.AspNet.DataProtection": "1.0.0-beta8",
     "Microsoft.AspNet.Diagnostics": "1.0.0-beta8",
     "Microsoft.AspNet.Owin": "1.0.0-beta8",
+    "Microsoft.Owin.Security.Google": "3.0.1",
     "Serilog.Framework.Logging": "1.0.0-beta8-10065"
   },
 
