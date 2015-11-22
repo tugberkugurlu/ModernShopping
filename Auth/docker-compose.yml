@@ -1,6 +1,7 @@
 auth:
   build: .
   dockerfile: Dockerfile
+  container_name: ModernShopping-auth 
   ports: 
     - "44300:44300"
   environment: 
@@ -10,3 +11,4 @@ auth:
   
 auth_mongo:
   image: mongo
+  container_name: ModernShopping-auth-mongo
