@@ -557,18 +557,15 @@ namespace Dnx.Identity.MongoDB
             {
                 throw new ArgumentNullException(nameof(user));
             }
+            
+            // This method can be called even if user doesn't have an e-mail.
+            // Act cool in this case and gracefully handle.
+            // More info: https://github.com/aspnet/Identity/issues/645
 
-            if (normalizedEmail == null)
+            if(normalizedEmail != null && user.Email != null)
             {
-                throw new ArgumentNullException(nameof(normalizedEmail));
+                user.Email.SetNormalizedEmail(normalizedEmail);   
             }
-
-            if (user.Email == null)
-            {
-                throw new InvalidOperationException("Cannot set normalized e-mail since the user doesn't have an e-mail.");
-            }
-
-            user.Email.SetNormalizedEmail(normalizedEmail);
 
             return Task.FromResult(0);
         }

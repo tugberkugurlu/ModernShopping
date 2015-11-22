@@ -91,7 +91,7 @@ namespace ModernShopping.Auth
         }
 
         public void Configure(IApplicationBuilder app, IServiceProvider serviceProvider)
-        {
+        {   
             // TOOD: PR this to https://github.com/IdentityServer/IdentityServer3.Samples/blob/master/source/AspNet5Host/src/IdentityServerAspNet5/Startup.cs#L21
             var certFile = Path.Combine(_appEnv.ApplicationBasePath, "idsrv3test.pfx");
             var idSvrFactory = IdSrvFactory.Configure();

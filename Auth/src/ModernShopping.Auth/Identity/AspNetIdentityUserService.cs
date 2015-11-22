@@ -9,6 +9,8 @@ using IdentityServer3.Core;
 using IdentityModel;
 using IdentityServer3.Core.Services.Default;
 using Dnx.Identity.MongoDB;
+using Dnx.Identity.MongoDB.Models;
+using Microsoft.AspNet.Identity;
 
 namespace ModernShopping.Auth.Identity
 {
