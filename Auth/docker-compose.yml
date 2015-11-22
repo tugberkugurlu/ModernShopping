@@ -1,6 +1,6 @@
 auth:
   build: .
-  dockerfile: Dockerfile
+  dockerfile: auth.dockerfile
   container_name: ModernShopping-auth 
   ports: 
     - "44300:44300"
