@@ -1,0 +1,5 @@
+{
+	"JwtBearerAuth": {
+		"Authority": "http://localhost:44300/"
+	}
+}

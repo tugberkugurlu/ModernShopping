@@ -1,14 +1,27 @@
 auth:
   build: .
-  dockerfile: auth.dockerfile
-  container_name: ModernShopping-auth 
+  dockerfile: docker-auth.dockerfile
+  container_name: ModernShopping_auth 
   ports: 
     - "44300:44300"
   environment: 
+    - ASPNET_ENV=Development
     - ModernShoppingAuth_MongoDb__ConnectionString=mongodb://auth_mongo:27017
   links: 
     - auth_mongo
   
 auth_mongo:
   image: mongo
-  container_name: ModernShopping-auth-mongo
+  container_name: ModernShopping_auth_mongo
+
+auth_sample:
+  build: .
+  dockerfile: docker-sampleapp.dockerfile
+  container_name: ModernShopping_auth_sampleapp
+  ports: 
+    - "5001:5001"
+  environment:
+    - ASPNET_ENV=Development
+    - ModernShoppingAuthSampleApp_JwtBearerAuth__Authority=http://auth:44300/
+  links: 
+    - auth

@@ -50,7 +50,7 @@ namespace ModernShopping.Auth
             var context = contextObject as HttpContext;
             context.Response.StatusCode = 403;
 
-            return Task.CompletedTask;
+            return Task.FromResult(0);
         }
     }
 }

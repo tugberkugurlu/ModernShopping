@@ -101,7 +101,7 @@
                 console.log(e, xhr);
                 show({ error: "unknown http error" });
             };
-            xhr.open("GET", "http://localhost:5001/api/values", true);
+            xhr.open("GET", "http://172.17.0.167:5001/api/values", true);
             xhr.setRequestHeader("Authorization", "Bearer " + token);
             xhr.send();
         }
