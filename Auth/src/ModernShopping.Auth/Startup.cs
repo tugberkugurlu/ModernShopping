@@ -18,6 +18,7 @@ using Microsoft.Framework.DependencyInjection.Extensions;
 using Microsoft.Framework.Configuration;
 using Owin;
 using Microsoft.Owin.Security.Google;
+using System.Security.Cryptography;
 
 namespace ModernShopping.Auth
 {
@@ -91,16 +92,14 @@ namespace ModernShopping.Auth
         }
 
         public void Configure(IApplicationBuilder app, IServiceProvider serviceProvider)
-        {   
-            // TOOD: PR this to https://github.com/IdentityServer/IdentityServer3.Samples/blob/master/source/AspNet5Host/src/IdentityServerAspNet5/Startup.cs#L21
-            var certFile = Path.Combine(_appEnv.ApplicationBasePath, "idsrv3test.pfx");
+        {
             var idSvrFactory = IdSrvFactory.Configure();
             idSvrFactory.ConfigureCustomUserService(serviceProvider);
 
             var idsrvOptions = new IdentityServerOptions
             {    
                 SiteName = "ModernShopping",
-                SigningCertificate = new X509Certificate2(certFile, "idsrv3test"),
+                SigningCertificate = LoadCertificate(),
                 Factory = idSvrFactory,
                 RequireSsl = false,
 
@@ -113,6 +112,57 @@ namespace ModernShopping.Auth
 
             app.UseDeveloperExceptionPage();
             app.UseIdentityServer(idsrvOptions);
+        }
+        
+        // Taken from https://github.com/PinpointTownes/AspNet.Security.OpenIdConnect.Server/blob/e405908e9ed10f6eb5b10e5d3c6cf75cd0bf4926/samples/Mvc/Mvc.Server/Startup.cs#L156-L171
+        // Related to https://github.com/dotnet/corefx/issues/424, https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/issues/179 
+        // Note: in a real world app, you'd probably prefer storing the X.509 certificate
+        // in the user or machine store. To keep this sample easy to use, the certificate
+        // is extracted from the Certificate.cer/pfx file embedded in this assembly.
+        private X509Certificate2 LoadCertificate()
+        {
+            var cerFile = Path.Combine(_appEnv.ApplicationBasePath, "certs", "Certificate.cer");
+            using (var stream = File.OpenRead(cerFile))
+            using (var memStream = new MemoryStream())
+            {
+                stream.CopyTo(memStream);
+                memStream.Flush();
+                
+                return new X509Certificate2(memStream.ToArray()) 
+                {
+                    PrivateKey = LoadPrivateKey()
+                }; 
+            }
+        }
+        
+        // Taken from https://github.com/PinpointTownes/AspNet.Security.OpenIdConnect.Server/blob/e405908e9ed10f6eb5b10e5d3c6cf75cd0bf4926/samples/Mvc/Mvc.Server/Startup.cs#L182-L207
+        // Note: CoreCLR doesn't support .pfx files yet. To work around this limitation, the private key
+        // is stored in a different - an totally unprotected/unencrypted - .keys file and attached to the
+        // X509Certificate2 instance in LoadCertificate : NEVER do that in a real world application.
+        // See https://github.com/dotnet/corefx/issues/424
+        private RSA LoadPrivateKey()
+        {
+            var keyFile = Path.Combine(_appEnv.ApplicationBasePath, "certs", "Certificate.keys");
+            using (var stream = File.OpenRead(keyFile))
+            using (var reader = new StreamReader(stream))
+            {
+                // See https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/issues/179
+                var key = new RSACryptoServiceProvider(new CspParameters { ProviderType = 24 });
+                
+                key.ImportParameters(new RSAParameters 
+                {
+                    D = Convert.FromBase64String(reader.ReadLine()),
+                    DP = Convert.FromBase64String(reader.ReadLine()),
+                    DQ = Convert.FromBase64String(reader.ReadLine()),
+                    Exponent = Convert.FromBase64String(reader.ReadLine()),
+                    InverseQ = Convert.FromBase64String(reader.ReadLine()),
+                    Modulus = Convert.FromBase64String(reader.ReadLine()),
+                    P = Convert.FromBase64String(reader.ReadLine()),
+                    Q = Convert.FromBase64String(reader.ReadLine())
+                });
+
+                return key;
+            }
         }
 
         private void AddDefaultTokenProviders(IServiceCollection services)
