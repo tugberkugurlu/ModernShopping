@@ -40,3 +40,9 @@ The below is the prefered approach to take to build this project:
  - Have integration tests only, no unit tests.
  - Use NodaTime on all .NET projects whenever possible.
  - The whole solution should be runable cohesively with minimal config locally as well as individual pieces running seperately.
+
+## How to Run the Solution
+
+> :warning: This is still in progress but the below is the ideal approach that is targgeted to run this during development.
+
+This application consists of several little, targetted applications and in order to be able to run the entire solution in a cohesive way in your local machine, it leverages [Docker Compose](https://docs.docker.com/compose/). You should be able to get everything up and running by running `docker-compose up` command under the root directory of this repository.

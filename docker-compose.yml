@@ -1,0 +1,15 @@
+auth:
+  build: ./Auth/
+  dockerfile: docker-auth.dockerfile
+  container_name: ModernShopping_root_auth 
+  ports: 
+    - "44300:44300"
+  environment: 
+    - ASPNET_ENV=Development
+    - ModernShoppingAuth_MongoDb__ConnectionString=mongodb://mongo:27017
+  links: 
+    - mongo
+  
+mongo:
+  image: mongo
+  container_name: ModernShopping_root_mongo
