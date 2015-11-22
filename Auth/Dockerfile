@@ -1,8 +1,10 @@
 FROM microsoft/aspnet:1.0.0-beta8
 
-ADD ./src /app
+COPY ./src/ModernShopping.Auth/project.json /app/ModernShopping.Auth/
+COPY ./src/Dnx.Identity.MongoDB/project.json /app/Dnx.Identity.MongoDB/
 WORKDIR /app/ModernShopping.Auth
 RUN ["dnu", "restore"]
+ADD ./src /app
 
 EXPOSE 44300
 ENTRYPOINT ["dnx", "web"]
