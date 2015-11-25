@@ -18,7 +18,7 @@
   "frameworks": {
     "dnx451": {
       "dependencies": {
-        "IdentityServer3": "2.1.1",
+        "IdentityServer3": "2.2.0",
         "Dnx.Identity.MongoDB": "",
         "Microsoft.Owin": "3.0.1",
         "IdentityModel":  "1.2.1"

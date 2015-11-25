@@ -48,7 +48,8 @@ namespace ModernShopping.Auth.Host.Config
                     RequireConsent = true,
                     AllowRememberConsent = true,
                     IdentityTokenLifetime = 360,
-                    AccessTokenLifetime = 3600
+                    AccessTokenLifetime = 3600,
+                    AccessTokenType = AccessTokenType.Reference
                 }
             };
         }
