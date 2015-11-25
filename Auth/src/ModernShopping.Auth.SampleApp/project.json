@@ -18,7 +18,7 @@
   "frameworks": {
     "dnx451": { 
       "dependencies": {
-        "IdentityServer3.AccessTokenValidation": "2.3.0"
+        "IdentityServer3.AccessTokenValidation": "2.3.1"
       },
       "frameworkAssemblies": {
         "System.Net.Http.WebRequest": "4.0.0"
