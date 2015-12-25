@@ -1,4 +1,4 @@
-FROM microsoft/aspnet:1.0.0-beta8
+FROM microsoft/aspnet:1.0.0-rc1-update1
 
 COPY ./src/ModernShopping.Auth/project.json /app/ModernShopping.Auth/
 COPY ./src/Dnx.Identity.MongoDB/project.json /app/Dnx.Identity.MongoDB/

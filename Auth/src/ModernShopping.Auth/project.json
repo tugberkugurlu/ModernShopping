@@ -3,12 +3,13 @@
   "version": "1.0.0-*",
 
   "dependencies": {
-    "Microsoft.AspNet.Server.Kestrel": "1.0.0-beta8",
-    "Microsoft.AspNet.DataProtection": "1.0.0-beta8",
-    "Microsoft.AspNet.Diagnostics": "1.0.0-beta8",
-    "Microsoft.AspNet.Owin": "1.0.0-beta8",
+    "Microsoft.AspNet.Server.Kestrel": "1.0.0-rc1-final",
+    "Microsoft.AspNet.DataProtection": "1.0.0-rc1-final",
+    "Microsoft.AspNet.Diagnostics": "1.0.0-rc1-final",
+    "Microsoft.AspNet.Owin": "1.0.0-rc1-final",
     "Microsoft.Owin.Security.Google": "3.0.1",
-    "Serilog.Framework.Logging": "1.0.0-beta8-10065"
+    "Serilog.Framework.Logging": "1.0.0-rc1-final-10071",
+    "Dnx.Identity.MongoDB": ""
   },
 
   "commands": {
@@ -19,7 +20,6 @@
     "dnx451": {
       "dependencies": {
         "IdentityServer3": "2.2.0",
-        "Dnx.Identity.MongoDB": "",
         "Microsoft.Owin": "3.0.1",
         "IdentityModel":  "1.2.1"
       }

@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 using IdentityServer3.AccessTokenValidation;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Hosting;
-using Microsoft.Dnx.Runtime;
-using Microsoft.Framework.Configuration;
-using Microsoft.Framework.DependencyInjection;
-using Microsoft.Framework.Logging;
-using Microsoft.Framework.OptionsModel;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.OptionsModel;
 using Microsoft.Owin.Logging;
 using Owin;
 using Serilog;
@@ -18,14 +17,15 @@ using Microsoft.Owin.BuilderProperties;
 
 namespace ModernShopping.Auth.SampleApp
 {
+    using Microsoft.Extensions.PlatformAbstractions;
     using DataProtectionProviderDelegate = Func<string[], Tuple<Func<byte[], byte[]>, Func<byte[], byte[]>>>;
     using DataProtectionTuple = Tuple<Func<byte[], byte[]>, Func<byte[], byte[]>>;
 
     internal class OwinLogger : Microsoft.Owin.Logging.ILogger
     {   
-        private readonly Microsoft.Framework.Logging.ILogger _logger;
+        private readonly Microsoft.Extensions.Logging.ILogger _logger;
         
-        internal OwinLogger(Microsoft.Framework.Logging.ILogger logger) 
+        internal OwinLogger(Microsoft.Extensions.Logging.ILogger logger) 
         {
             if (logger == null)
             {
@@ -98,9 +98,9 @@ namespace ModernShopping.Auth.SampleApp
 
     internal class OwinLoggerFactory : Microsoft.Owin.Logging.ILoggerFactory
     {
-        private readonly Microsoft.Framework.Logging.ILoggerFactory _loggerFactory;
+        private readonly Microsoft.Extensions.Logging.ILoggerFactory _loggerFactory;
         
-        internal OwinLoggerFactory(Microsoft.Framework.Logging.ILoggerFactory loggerFactory)
+        internal OwinLoggerFactory(Microsoft.Extensions.Logging.ILoggerFactory loggerFactory)
         {
             if (loggerFactory == null)
             {
@@ -130,7 +130,7 @@ namespace ModernShopping.Auth.SampleApp
         private readonly ILogger<Startup> _logger;
         private readonly IConfiguration _configuration;
 
-        public Startup(IApplicationEnvironment appEnv, IHostingEnvironment hostingEnv, Microsoft.Framework.Logging.ILoggerFactory loggerFactory)
+        public Startup(IApplicationEnvironment appEnv, IHostingEnvironment hostingEnv, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory)
         {
             var serilogLogger = new LoggerConfiguration()
                 .WriteTo.TextWriter(Console.Out)
@@ -190,7 +190,7 @@ namespace ModernShopping.Auth.SampleApp
                 addToPipeline(next =>
                 {
                     var builder = new Microsoft.Owin.Builder.AppBuilder();
-                    var loggerFactory = app.ApplicationServices.GetService<Microsoft.Framework.Logging.ILoggerFactory>();
+                    var loggerFactory = app.ApplicationServices.GetService<Microsoft.Extensions.Logging.ILoggerFactory>();
                     var lifetime = app.ApplicationServices.GetService<IApplicationLifetime>();
                     var owinLoggerFactory = new OwinLoggerFactory(loggerFactory);
                     var provider = app.ApplicationServices.GetService(typeof(Microsoft.AspNet.DataProtection.IDataProtectionProvider)) as Microsoft.AspNet.DataProtection.IDataProtectionProvider;

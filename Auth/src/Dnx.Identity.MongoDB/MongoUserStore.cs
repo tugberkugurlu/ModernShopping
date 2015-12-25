@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Threading;
 using MongoDB.Driver;
-using Microsoft.Framework.Logging;
+using Microsoft.Extensions.Logging;
 using Dnx.Identity.MongoDB.Models;
 using System.Linq;
 using System.Security.Claims;

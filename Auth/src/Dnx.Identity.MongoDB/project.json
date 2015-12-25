@@ -1,5 +1,5 @@
 ﻿{
-  "version": "3.0.0-beta8-003",
+  "version": "3.0.0-rc1-final-001",
   "description": "Dnx.Identity.MongoDB Class Library",
   "authors": [ "Tugberk Ugurlu" ],
   "tags": [ "identity", "mongodb", "mongo", "aspnet5", "dnx" ],
@@ -7,12 +7,12 @@
   "licenseUrl": "https://github.com/tugberkugurlu/ModernShopping/blob/master/LICENSE",
 
   "dependencies": {
-    "Microsoft.AspNet.Identity": "3.0.0-beta8",
-    "Microsoft.Framework.Logging": "1.0.0-beta8"
+    "Microsoft.AspNet.Identity": "3.0.0-rc1-final",
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-final"
   },
 
   "frameworks": {
-    "dnx451": {
+    "net451": {
       "dependencies": {
         "MongoDB.Driver":  "2.0.1"
       }
