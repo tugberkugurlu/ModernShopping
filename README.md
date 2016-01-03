@@ -16,7 +16,7 @@ This application will be built several objectives in mind:
  - Multiple clients (Web, iPhone, Android, etc.)
  - Not-only-one architectural pattern
 
-## Approach to Take
+## Approach to Take (Premature Thoughts)
 
 The below is the prefered approach to take to build this project:
 
