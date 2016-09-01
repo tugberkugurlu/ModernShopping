@@ -46,3 +46,12 @@ The below is the prefered approach to take to build this project:
 > :warning: This is still in progress but the below is the ideal approach that is targgeted to run this during development.
 
 This application consists of several little, targetted applications and in order to be able to run the entire solution in a cohesive way in your local machine, it leverages [Docker Compose](https://docs.docker.com/compose/). You should be able to get everything up and running by running `docker-compose up` command under the root directory of this repository.
+
+## Technologies to Use
+
+This type of architecture encouranges to use different flovours of technologies. However, there are some certain technologies we will use within the solution:
+
+ - [ASP.NET MVC Core](https://github.com/aspnet/Mvc)
+ - [React](https://facebook.github.io/react/)
+ - [Neo4j](https://neo4j.com/)
+ - [Elasticsearch](https://www.elastic.co/products/elasticsearch)
